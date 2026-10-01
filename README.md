@@ -105,16 +105,22 @@ Cada respuesta se guarda como una clave propia en Netlify Blobs y los totales se
 
 Limitaciones del prototipo: no hay protección contra envíos falsos desde fuera de la app, y contar listando claves es lento con decenas de miles de respuestas al día. Para más tráfico, cambia el almacén por un contador atómico (por ejemplo, `INCR` en Redis o Upstash).
 
-## Publicar en GitHub Pages
+## Publicar: web en GitHub Pages y contador en Netlify
 
-`.github/workflows/pages.yml` publica el juego en cada push a `main`. La primera vez hay que activarlo en el repositorio de GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**. Después se puede lanzar a mano desde la pestaña **Actions** (*Publicar en GitHub Pages → Run workflow*) o hacer un push a `main`.
+GitHub Pages solo sirve archivos estáticos y no puede ejecutar el contador. Por eso:
 
-El juego queda en `https://<usuario>.github.io/Calendas/`. GitHub Pages solo sirve archivos estáticos: la función del contador no se publica y el juego oculta el porcentaje global. Para tenerlo, despliega en Netlify (abajo).
+- **La web** se publica en GitHub Pages con `.github/workflows/pages.yml`, en cada push a `main`. La primera vez hay que activarlo en GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**. Queda en `https://joseleking.github.io/Calendas/`.
+- **El contador** es la función de Netlify. Desde GitHub Pages, la web lo llama en `CONTADOR_NETLIFY` (`js/api.js`). La función solo acepta llamadas de los orígenes de `ORIGENES_PERMITIDOS` (`netlify/functions/respuestas.mjs`). Si cambias el nombre del sitio de Netlify o el dominio de la web, actualiza esas dos constantes.
+- Desde `localhost` la web no llama al contador real, así que las pruebas en local no lo ensucian.
 
 ## Desplegar en Netlify
 
-1. Sube el repositorio a GitHub.
-2. En Netlify: **Add new site → Import an existing project** y elige el repo. `netlify.toml` ya define la configuración: publica la raíz, usa las funciones de `netlify/functions` y Node 22. No hay comando de build.
-3. Despliega. Netlify Blobs no requiere configuración adicional.
+Estos pasos sirven tanto para alojar solo el contador (con la web en GitHub Pages) como para alojarlo todo en Netlify.
+
+1. En Netlify: **Add new project → Import an existing project → GitHub** y elige el repo `Calendas`. `netlify.toml` ya define la configuración: publica la raíz, usa las funciones de `netlify/functions` y Node 22. No hay comando de build.
+2. Despliega. Netlify Blobs no requiere configuración adicional.
+3. En **Project configuration → Change project name**, ponle `calendas`, para que el contador quede en `https://calendas.netlify.app/api/respuestas`. Si el nombre está cogido, usa otro y actualiza `CONTADOR_NETLIFY` en `js/api.js`.
+
+Netlify también sirve una copia del juego en su propia dirección, que funciona igual. La dirección pública es la de GitHub Pages.
 
 También desde la terminal: `netlify init` la primera vez y luego `netlify deploy --prod`.
