@@ -1,0 +1,13 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  # esbuild empaqueta la función junto con data/duelos.json y los módulos de js/.
+  node_bundler = "esbuild"
+
+[dev]
+  port = 8888

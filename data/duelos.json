@@ -1,0 +1,145 @@
+{
+  "_aviso": "Años y curiosidades PROVISIONALES, sin contrastar. Verificad cada duelo con el CORDE, el CDH o el Diccionario histórico de la RAE y marcad \"verificado\": true antes de publicar. Ver README.",
+  "duelos": [
+    {
+      "id": 1,
+      "palabraA": "camisa",
+      "anioA": 1062,
+      "palabraB": "jersey",
+      "anioB": 1924,
+      "dificultad": 1,
+      "curiosidad": "«Camisa» viene del latín tardío camisia, quizá de origen celta, y aparece ya en documentos medievales. «Jersey» llegó del inglés en el siglo XX y debe su nombre a la isla de Jersey, famosa por sus tejidos de punto.",
+      "verificado": false
+    },
+    {
+      "id": 2,
+      "palabraA": "pizza",
+      "anioA": 1960,
+      "palabraB": "pan",
+      "anioB": 1000,
+      "dificultad": 1,
+      "curiosidad": "«Pan» viene directamente del latín panis y está en el castellano desde sus primeros textos. «Pizza» es un italianismo que se popularizó en España en la segunda mitad del siglo XX.",
+      "verificado": false
+    },
+    {
+      "id": 3,
+      "palabraA": "teléfono",
+      "anioA": 1855,
+      "palabraB": "telégrafo",
+      "anioB": 1795,
+      "dificultad": 2,
+      "curiosidad": "Las dos se forman con raíces griegas: tele- ('lejos') más graphein ('escribir') o phoné ('voz'). El telégrafo óptico llegó a España a finales del XVIII, y «teléfono» ya se usaba para aparatos acústicos antes del invento de Bell (1876).",
+      "verificado": false
+    },
+    {
+      "id": 4,
+      "palabraA": "fotografía",
+      "anioA": 1845,
+      "palabraB": "cine",
+      "anioB": 1910,
+      "dificultad": 2,
+      "curiosidad": "«Fotografía» se acuñó en 1839, el año en que se presentó el daguerrotipo. «Cine» es el acortamiento de «cinematógrafo», el aparato de los hermanos Lumière (1895), y tardó unos años en abreviarse.",
+      "verificado": false
+    },
+    {
+      "id": 5,
+      "palabraA": "computadora",
+      "anioA": 1962,
+      "palabraB": "robot",
+      "anioB": 1925,
+      "dificultad": 3,
+      "curiosidad": "«Robot» viene del checo robota ('trabajo forzado') y la popularizó la obra R.U.R. de Karel Čapek (1920). «Computadora» triunfó en América y «ordenador», calcado del francés ordinateur, en España.",
+      "verificado": false
+    },
+    {
+      "id": 6,
+      "palabraA": "tomate",
+      "anioA": 1532,
+      "palabraB": "berenjena",
+      "anioB": 1300,
+      "dificultad": 3,
+      "curiosidad": "«Tomate» viene del náhuatl tomatl y llegó tras la conquista de México. «Berenjena» es bastante más antigua en castellano: entró por el árabe andalusí, que a su vez la había tomado del persa.",
+      "verificado": false
+    },
+    {
+      "id": 7,
+      "palabraA": "café",
+      "anioA": 1700,
+      "palabraB": "chocolate",
+      "anioB": 1580,
+      "dificultad": 4,
+      "curiosidad": "«Chocolate» procede del náhuatl, aunque su formación exacta sigue discutiéndose. «Café» viene del turco kahve, y este del árabe qahwa, y entró en español a través del italiano o del francés.",
+      "verificado": false
+    },
+    {
+      "id": 8,
+      "palabraA": "minifalda",
+      "anioA": 1966,
+      "palabraB": "bikini",
+      "anioB": 1950,
+      "dificultad": 4,
+      "curiosidad": "El bikini se presentó en París en 1946 y tomó su nombre del atolón de Bikini, donde se hacían pruebas nucleares. La minifalda se popularizó a mediados de los sesenta, y su nombre es un calco del inglés miniskirt.",
+      "verificado": false
+    },
+    {
+      "id": 9,
+      "palabraA": "pantalón",
+      "anioA": 1800,
+      "palabraB": "corbata",
+      "anioB": 1679,
+      "dificultad": 5,
+      "curiosidad": "«Corbata» viene del italiano corvatta, 'croata': los jinetes croatas al servicio de Francia llevaban pañuelos anudados al cuello. «Pantalón» viene de Pantalone, personaje de la commedia dell'arte que vestía calzas largas.",
+      "verificado": false
+    },
+    {
+      "id": 10,
+      "palabraA": "fútbol",
+      "anioA": 1910,
+      "palabraB": "tenis",
+      "anioB": 1890,
+      "dificultad": 5,
+      "curiosidad": "Los dos deportes llegaron de Inglaterra a finales del XIX. «Fútbol» compitió durante años con «foot-ball» y con el castizo «balompié», que sobrevive en nombres de clubes como el Real Betis Balompié.",
+      "verificado": false
+    },
+    {
+      "id": 11,
+      "palabraA": "patata",
+      "anioA": 1601,
+      "palabraB": "batata",
+      "anioB": 1516,
+      "dificultad": 6,
+      "curiosidad": "«Batata» es una palabra taína de las Antillas, de las primeras que llegaron de América. «Patata» nació en España como cruce de «batata» y «papa», la voz quechua del tubérculo andino.",
+      "verificado": false
+    },
+    {
+      "id": 12,
+      "palabraA": "hola",
+      "anioA": 1490,
+      "palabraB": "ojalá",
+      "anioB": 1270,
+      "dificultad": 6,
+      "curiosidad": "«Ojalá» viene del árabe hispánico law šá lláh, 'si Dios quisiera'. «Hola» se documenta más tarde, y durante siglos sirvió más para llamar a alguien que como el saludo neutro de hoy.",
+      "verificado": false
+    },
+    {
+      "id": 13,
+      "palabraA": "huracán",
+      "anioA": 1511,
+      "palabraB": "canoa",
+      "anioB": 1492,
+      "dificultad": 7,
+      "curiosidad": "«Canoa» suele considerarse el primer americanismo del español: aparece en el diario de Colón y Nebrija la recogió poco después en su vocabulario. «Huracán», también del taíno, llegó muy poco después.",
+      "verificado": false
+    },
+    {
+      "id": 14,
+      "palabraA": "almohada",
+      "anioA": 1050,
+      "palabraB": "cama",
+      "anioB": 950,
+      "dificultad": 7,
+      "curiosidad": "«Cama» es una palabra prerromana: san Isidoro ya la citaba en el siglo VII como voz hispánica. «Almohada» viene del árabe andalusí, de una raíz que significa 'mejilla', y es uno de los muchos arabismos domésticos del castellano.",
+      "verificado": false
+    }
+  ]
+}

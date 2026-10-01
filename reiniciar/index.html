@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <title>Calendas · Reiniciar</title>
+  <script>
+    // Borra todo lo que Calendas guarda en este navegador (partidas, estadísticas
+    // y las del modo desarrollo) y vuelve al juego como si nunca se hubiera jugado.
+    try {
+      for (const clave of Object.keys(localStorage)) {
+        if (clave.startsWith('calendas:')) localStorage.removeItem(clave);
+      }
+    } catch {}
+    try { sessionStorage.removeItem('calendas:portada'); } catch {}
+    location.replace('../');
+  </script>
+</head>
+<body></body>
+</html>
