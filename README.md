@@ -84,7 +84,9 @@ Edita `public/data/duelos.json` y añade un objeto al array `duelos`:
   "anioB": 1600,
   "dificultad": 3,
   "curiosidad": "Dos o tres líneas sobre la historia de las palabras.",
-  "verificado": false
+  "verificado": false,
+  "fuenteA": "CORDE: 1890, autor, obra",
+  "fuenteB": "DHLE: 1600"
 }
 ```
 
@@ -92,6 +94,7 @@ Edita `public/data/duelos.json` y añade un objeto al array `duelos`:
 - `anioA` / `anioB`: año de primera documentación. No pueden coincidir.
 - `dificultad`: de 1 (fácil, lunes) a 7 (difícil, domingo).
 - Da igual qué palabra pongas como A o como B.
+- `fuenteA` / `fuenteB` (opcionales): de dónde sale cada año, para poder revisarlo. El juego no los usa.
 - Conviene que todas las dificultades tengan el mismo número de duelos, para que cada día de la semana tarde lo mismo en repetirse.
 
 **Importante:** cambiar el número de duelos de una dificultad cambia la rotación de ese día de la semana, **incluido el duelo de hoy** si es ese día. Para no cambiar el duelo a quien ya ha jugado, publica los cambios en un día de otra dificultad. Por ejemplo, añade duelos de dificultad 3 (miércoles) un jueves. El Worker usa el mismo JSON, así que web y contador siempre coinciden en cuál es la respuesta correcta.
