@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
   <!-- Icono «maskable» de Android: el sello cabe en la zona segura (círculo del 80 %). -->
   <rect width="1024" height="1024" fill="#F4EEE2"/>
-  <g transform="translate(216.2 227.8) scale(2.9)">
+  <g transform="translate(73.4 90.6) scale(4.3)">
     <path d="M100 14 C128 10 158 24 174 50 C190 78 186 122 166 150 C144 180 96 192 64 174 C32 156 12 118 18 84 C24 48 64 18 100 14 Z" fill="#A8321E"/>
     <path d="M100 14 C128 10 158 24 174 50 C190 78 186 122 166 150" fill="none" stroke="#7E2414" stroke-width="5" stroke-linecap="round" opacity=".6"/>
     <circle cx="100" cy="98" r="56" fill="none" stroke="#F4DCCF" stroke-width="2"/>
