@@ -96,6 +96,18 @@ button {
   font-size: 2.1rem;
   font-weight: 500;
   letter-spacing: 0.04em;
+  /* El sello va delante del nombre, como en un membrete. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.titulo-sello {
+  width: 1em;
+  height: 1em;
+  /* Un poco ladeado, como estampado a mano. */
+  transform: rotate(-8deg);
 }
 
 .subtitulo {
