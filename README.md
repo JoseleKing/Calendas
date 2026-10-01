@@ -11,6 +11,8 @@
 public/                        La web: todo lo que se publica
   index.html                   Única pantalla (incluye en línea el logo de la portada de arranque)
   icons/sello.svg              Favicon: el sello de lacre
+  icons/*.png                  Iconos de iPhone y Android e imagen para compartir (generados)
+  manifest.webmanifest         Nombre e iconos al instalar la app en el móvil
   reiniciar/index.html         /reiniciar: borra los datos locales y vuelve al juego
   css/estilos.css              Estilos (tokens de color, cartas, animaciones, modo oscuro)
   js/app.js                    Arranque y flujo de la partida
@@ -21,6 +23,8 @@ public/                        La web: todo lo que se publica
   js/revelacion.js             Revelación y línea de tiempo
   js/compartir.js              Texto para compartir, Web Share API o portapapeles
   data/duelos.json             Banco de duelos
+assets/                        SVG de origen de los iconos y de la imagen para compartir
+scripts/generar-iconos.mjs     Genera los PNG de public/icons a partir de assets/ (npm run iconos)
 worker/index.js                Worker de Cloudflare: sirve public/ y el contador /api/respuestas
 migrations/                    Esquema de la base de datos D1 del contador
 wrangler.jsonc                 Configuración de Cloudflare (Worker, archivos estáticos y D1)
@@ -54,6 +58,14 @@ Sin contador, el juego funciona igual y simplemente no muestra el porcentaje glo
 - `?fecha=2026-10-05` simula ese día. En este modo las estadísticas se guardan aparte (no tocan las reales), no se envía nada al backend y aparece una barra arriba que lo indica.
 - **`/reiniciar`** borra todo lo que Calendas guarda en el navegador (partidas, estadísticas reales y del modo desarrollo) y vuelve al juego como si nunca se hubiera jugado. Ojo: en producción, volver a jugar el duelo de hoy envía otra respuesta al contador global.
 - En la consola del navegador aparecen avisos si el banco tiene errores (ids repetidos, años empatados, dificultades sin duelos…) y cuántos duelos quedan sin verificar.
+
+## Iconos y vista previa al compartir
+
+- **iPhone («Añadir a pantalla de inicio»):** usa `icons/apple-touch-icon.png` (180×180). iOS no admite iconos SVG.
+- **Android e instalación:** `manifest.webmanifest` declara los iconos de 192 y 512 px y uno *maskable*.
+- **WhatsApp, Telegram y redes:** las etiquetas `og:` de `index.html` apuntan a `icons/compartir.png` (1200×630) con la dirección completa. Si cambia el dominio, hay que actualizar `og:url` y `og:image`.
+
+Los PNG se generan a partir de los SVG de `assets/` con `npm run iconos` (usa `sips`, de macOS). Los textos de los SVG están convertidos a trazados, así que no dependen de ninguna fuente.
 
 ## Cómo funciona el duelo del día
 
