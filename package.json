@@ -5,10 +5,11 @@
   "description": "Calendas: ¿quién lo dijo primero? Un duelo diario sobre la historia del léxico español.",
   "type": "module",
   "scripts": {
-    "dev": "netlify dev",
-    "estatico": "npx --yes serve ."
+    "dev": "wrangler d1 migrations apply calendas --local && wrangler dev",
+    "estatico": "npx --yes serve public",
+    "desplegar": "wrangler d1 migrations apply calendas --remote && wrangler deploy"
   },
-  "dependencies": {
-    "@netlify/blobs": "^11.1.2"
+  "devDependencies": {
+    "wrangler": "^4.145.0"
   }
 }

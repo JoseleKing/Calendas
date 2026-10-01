@@ -1,11 +1,8 @@
 // Cliente del contador global. Cualquier fallo (sin backend, sin red, timeout,
 // respuesta rara) devuelve null y la interfaz simplemente oculta el porcentaje.
 
-// En GitHub Pages no se puede ejecutar código de servidor, así que el contador
-// vive en Netlify. En cualquier otro sitio (netlify dev, o todo desplegado en
-// Netlify) la función está junto a la web y basta la ruta relativa.
-const CONTADOR_NETLIFY = 'https://calendas.netlify.app/api/respuestas';
-const URL_API = location.hostname.endsWith('github.io') ? CONTADOR_NETLIFY : 'api/respuestas';
+// El Worker de Cloudflare sirve la web y el contador desde el mismo sitio.
+const URL_API = 'api/respuestas';
 const TIEMPO_MAXIMO_MS = 3500;
 
 async function peticion(url, opciones = {}) {

@@ -1,6 +1,6 @@
 // Utilidades de fecha. Una "fecha de juego" es siempre una cadena 'AAAA-MM-DD'
 // referida al calendario de Madrid. Módulo puro: lo usan el navegador y la
-// función de Netlify, así que no debe tocar `window` ni `document`.
+// Worker de Cloudflare, así que no debe tocar `window` ni `document`.
 
 export const ZONA = 'Europe/Madrid';
 export const FECHA_LANZAMIENTO = '2026-10-01';

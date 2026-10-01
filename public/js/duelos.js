@@ -1,5 +1,5 @@
 // Banco de duelos y elección determinista del duelo del día.
-// Módulo puro salvo `cargarBanco`: la función de Netlify reutiliza `elegirDuelo`
+// Módulo puro salvo `cargarBanco`: el Worker de Cloudflare reutiliza `elegirDuelo`
 // para saber cuál es la respuesta correcta sin fiarse del cliente.
 
 import { diaSemana, indiceDia, semanaDesdeLanzamiento } from './fecha.js';

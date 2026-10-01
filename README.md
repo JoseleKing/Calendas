@@ -3,49 +3,51 @@
 **¿Quién lo dijo primero?** Un juego diario sobre la historia del léxico español. Cada día hay un único duelo entre dos palabras, el mismo para todos, y el jugador toca la que entró antes en el español. Tras responder se revelan los años de primera documentación, una línea de tiempo, una curiosidad y el porcentaje de jugadores que acertó.
 
 > ⚠️ **Las fechas y curiosidades del banco de ejemplo son provisionales y pueden ser inexactas.**
-> Todos los duelos de `data/duelos.json` llevan `"verificado": false`. Antes de publicar hay que comprobar cada año de primera documentación (y cada curiosidad) con fuentes como el **CORDE** (Corpus Diacrónico del Español), el **CDH** (Corpus del Diccionario histórico), el **Diccionario histórico de la lengua española** de la RAE o el *Diccionario crítico etimológico* de Corominas y Pascual, y cambiar el campo a `"verificado": true`. Ojo con los años redondos: casi siempre son estimaciones.
+> Todos los duelos de `public/data/duelos.json` llevan `"verificado": false`. Antes de publicar hay que comprobar cada año de primera documentación (y cada curiosidad) con fuentes como el **CORDE** (Corpus Diacrónico del Español), el **CDH** (Corpus del Diccionario histórico), el **Diccionario histórico de la lengua española** de la RAE o el *Diccionario crítico etimológico* de Corominas y Pascual, y cambiar el campo a `"verificado": true`. Ojo con los años redondos: casi siempre son estimaciones.
 
 ## Estructura
 
 ```
-index.html                     Única pantalla (incluye en línea el logo de la portada de arranque)
-icons/sello.svg                Favicon: el sello de lacre
-reiniciar/index.html           /reiniciar: borra los datos locales y vuelve al juego
-css/estilos.css                Estilos (tokens de color, cartas, animaciones, modo oscuro)
-js/app.js                      Arranque y flujo de la partida
-js/fecha.js                    Fecha de Madrid, número de duelo, cuenta atrás (módulo puro)
-js/duelos.js                   Elección determinista del duelo del día y validación del banco
-js/estadisticas.js             Rachas y aciertos en localStorage
-js/api.js                      Cliente del contador global (tolerante a fallos)
-js/revelacion.js               Revelación y línea de tiempo
-js/compartir.js                Texto para compartir, Web Share API o portapapeles
-data/duelos.json               Banco de duelos
-netlify/functions/respuestas.mjs  Contador global de respuestas (Netlify Functions + Blobs)
+public/                        La web: todo lo que se publica
+  index.html                   Única pantalla (incluye en línea el logo de la portada de arranque)
+  icons/sello.svg              Favicon: el sello de lacre
+  reiniciar/index.html         /reiniciar: borra los datos locales y vuelve al juego
+  css/estilos.css              Estilos (tokens de color, cartas, animaciones, modo oscuro)
+  js/app.js                    Arranque y flujo de la partida
+  js/fecha.js                  Fecha de Madrid, número de duelo, cuenta atrás (módulo puro)
+  js/duelos.js                 Elección determinista del duelo del día y validación del banco
+  js/estadisticas.js           Rachas y aciertos en localStorage
+  js/api.js                    Cliente del contador global (tolerante a fallos)
+  js/revelacion.js             Revelación y línea de tiempo
+  js/compartir.js              Texto para compartir, Web Share API o portapapeles
+  data/duelos.json             Banco de duelos
+worker/index.js                Worker de Cloudflare: sirve public/ y el contador /api/respuestas
+migrations/                    Esquema de la base de datos D1 del contador
+wrangler.jsonc                 Configuración de Cloudflare (Worker, archivos estáticos y D1)
 ```
 
 No hay framework ni paso de compilación: el navegador carga los módulos ES directamente.
 
 ## Ejecutar en local
 
-Requisitos: Node 22.12 o superior.
+Requisitos: Node 22 o superior.
 
-**Con backend (recomendado):**
+**Con contador (recomendado):**
 
 ```sh
 npm install
-npm install -g netlify-cli   # una sola vez
-npm run dev                  # http://localhost:8888
+npm run dev                  # http://localhost:8787
 ```
 
-`netlify dev` sirve la web y la función `/api/respuestas` a la vez, con un almacén de Blobs local.
+`npm run dev` prepara una base de datos D1 local y arranca el Worker con `wrangler dev`, que sirve la web y `/api/respuestas` a la vez. Las respuestas en local van a esa base de datos local, nunca a la real.
 
-**Solo el frontend:**
+**Solo la web:**
 
 ```sh
-npm run estatico             # o: python3 -m http.server
+npm run estatico             # o: python3 -m http.server -d public
 ```
 
-Sin backend, el juego funciona igual y simplemente no muestra el porcentaje global. No vale abrir `index.html` con doble clic (`file://`): los módulos ES necesitan un servidor.
+Sin contador, el juego funciona igual y simplemente no muestra el porcentaje global. No vale abrir `index.html` con doble clic (`file://`): los módulos ES necesitan un servidor.
 
 ### Modo desarrollo
 
@@ -59,7 +61,7 @@ Sin backend, el juego funciona igual y simplemente no muestra el porcentaje glob
 - El **día de la semana fija la dificultad**: lunes = 1 … domingo = 7.
 - Dentro de esa dificultad, los duelos se rotan **por semanas** en orden de `id`: con 2 duelos de dificultad 3, un miércoles sale el primero y el siguiente miércoles el segundo.
 - El orden de las dos cartas también depende de la fecha, para que la correcta no salga siempre arriba.
-- El **número de duelo** (#1, #2…) cuenta los días desde el lanzamiento, el 1 de octubre de 2026 (`FECHA_LANZAMIENTO` en `js/fecha.js`).
+- El **número de duelo** (#1, #2…) cuenta los días desde el lanzamiento, el 1 de octubre de 2026 (`FECHA_LANZAMIENTO` en `public/js/fecha.js`).
 
 ### Duelos anteriores
 
@@ -71,7 +73,7 @@ Sin backend, el juego funciona igual y simplemente no muestra el porcentaje glob
 
 ## Añadir duelos
 
-Edita `data/duelos.json` y añade un objeto al array `duelos`:
+Edita `public/data/duelos.json` y añade un objeto al array `duelos`:
 
 ```json
 {
@@ -92,35 +94,31 @@ Edita `data/duelos.json` y añade un objeto al array `duelos`:
 - Da igual qué palabra pongas como A o como B.
 - Conviene que todas las dificultades tengan el mismo número de duelos, para que cada día de la semana tarde lo mismo en repetirse.
 
-**Importante:** cambiar el número de duelos de una dificultad cambia la rotación de ese día de la semana, **incluido el duelo de hoy** si es ese día. Para no cambiar el duelo a quien ya ha jugado, publica los cambios en un día de otra dificultad. Por ejemplo, añade duelos de dificultad 3 (miércoles) un jueves. La función del backend usa el mismo JSON, así que web y backend siempre coinciden en cuál es la respuesta correcta.
+**Importante:** cambiar el número de duelos de una dificultad cambia la rotación de ese día de la semana, **incluido el duelo de hoy** si es ese día. Para no cambiar el duelo a quien ya ha jugado, publica los cambios en un día de otra dificultad. Por ejemplo, añade duelos de dificultad 3 (miércoles) un jueves. El Worker usa el mismo JSON, así que web y contador siempre coinciden en cuál es la respuesta correcta.
 
-## Porcentaje global (backend)
+## Porcentaje global (contador)
 
-`netlify/functions/respuestas.mjs` expone `/api/respuestas`:
+`worker/index.js` expone `/api/respuestas`:
 
 - `POST { fecha, palabra }`: registra la respuesta y devuelve `{ aciertos, total }`. El acierto se calcula en el servidor y solo se aceptan respuestas de hoy o de ayer, para quien responde justo después de medianoche.
 - `GET ?fecha=AAAA-MM-DD`: devuelve `{ aciertos, total }`.
 
-Cada respuesta se guarda como una clave propia en Netlify Blobs y los totales se obtienen listando las claves del día. Así no se pierden respuestas cuando llegan varias a la vez. El cliente recuerda si ya envió su respuesta y la reintenta al volver a abrir si falló. Si el backend no responde en 3,5 s, el porcentaje se oculta.
+Los totales se guardan en D1 (la base de datos SQLite de Cloudflare), una fila por día. Cada respuesta suma con una sola operación atómica, así que no se pierden respuestas aunque lleguen muchas a la vez. El cliente recuerda si ya envió su respuesta y la reintenta al volver a abrir si falló. Si el contador no responde en 3,5 s, el porcentaje se oculta.
 
-Limitaciones del prototipo: no hay protección contra envíos falsos desde fuera de la app, y contar listando claves es lento con decenas de miles de respuestas al día. Para más tráfico, cambia el almacén por un contador atómico (por ejemplo, `INCR` en Redis o Upstash).
+Limitación del prototipo: no hay protección contra envíos falsos desde fuera de la app.
 
-## Publicar: web en GitHub Pages y contador en Netlify
+## Publicar en Cloudflare
 
-GitHub Pages solo sirve archivos estáticos y no puede ejecutar el contador. Por eso:
+La web y el contador se publican juntos como un Worker de Cloudflare, en **https://calendas.calendas.workers.dev**. El plan gratuito basta, y el repo puede seguir siendo privado.
 
-- **La web** se publica en GitHub Pages con `.github/workflows/pages.yml`, en cada push a `main`. La primera vez hay que activarlo en GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**. Queda en `https://joseleking.github.io/Calendas/`.
-- **El contador** es la función de Netlify. Desde GitHub Pages, la web lo llama en `CONTADOR_NETLIFY` (`js/api.js`). La función solo acepta llamadas de los orígenes de `ORIGENES_PERMITIDOS` (`netlify/functions/respuestas.mjs`). Si cambias el nombre del sitio de Netlify o el dominio de la web, actualiza esas dos constantes.
-- Desde `localhost` la web no llama al contador real, así que las pruebas en local no lo ensucian.
+**Primera vez (desde la terminal):**
 
-## Desplegar en Netlify
+```sh
+npx wrangler login                     # abre el navegador para entrar en Cloudflare
+npx wrangler d1 create calendas        # solo si se monta en otra cuenta: copia el database_id en wrangler.jsonc
+npm run desplegar                      # crea la tabla en D1 y publica el Worker
+```
 
-Estos pasos sirven tanto para alojar solo el contador (con la web en GitHub Pages) como para alojarlo todo en Netlify.
+**Publicación automática en cada push:** en el panel de Cloudflare, abre **Workers & Pages → calendas → Settings → Build → Connect** y elige el repo `Calendas` de GitHub, rama `main`. Pon como *Deploy command* `npm run desplegar`, para que aplique también las migraciones nuevas de la base de datos.
 
-1. En Netlify: **Add new project → Import an existing project → GitHub** y elige el repo `Calendas`. `netlify.toml` ya define la configuración: publica la raíz, usa las funciones de `netlify/functions` y Node 22. No hay comando de build.
-2. Despliega. Netlify Blobs no requiere configuración adicional.
-3. En **Project configuration → Change project name**, ponle `calendas`, para que el contador quede en `https://calendas.netlify.app/api/respuestas`. Si el nombre está cogido, usa otro y actualiza `CONTADOR_NETLIFY` en `js/api.js`.
-
-Netlify también sirve una copia del juego en su propia dirección, que funciona igual. La dirección pública es la de GitHub Pages.
-
-También desde la terminal: `netlify init` la primera vez y luego `netlify deploy --prod`.
+**Cambios en la base de datos:** añade un archivo nuevo en `migrations/` (`0002_….sql`). `npm run desplegar` lo aplica antes de publicar.

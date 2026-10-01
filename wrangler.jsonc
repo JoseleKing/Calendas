@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "calendas",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-09-01",
+  // El juego se publica en https://calendas.calendas.workers.dev, sin URLs de vista previa por versión.
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "calendas",
+      "database_id": "660519d3-6327-4831-80aa-80701c08fe22",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
