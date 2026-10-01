@@ -105,6 +105,12 @@ Cada respuesta se guarda como una clave propia en Netlify Blobs y los totales se
 
 Limitaciones del prototipo: no hay protección contra envíos falsos desde fuera de la app, y contar listando claves es lento con decenas de miles de respuestas al día. Para más tráfico, cambia el almacén por un contador atómico (por ejemplo, `INCR` en Redis o Upstash).
 
+## Publicar en GitHub Pages
+
+`.github/workflows/pages.yml` publica el juego en cada push a `main`. La primera vez hay que activarlo en el repositorio de GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**. Después se puede lanzar a mano desde la pestaña **Actions** (*Publicar en GitHub Pages → Run workflow*) o hacer un push a `main`.
+
+El juego queda en `https://<usuario>.github.io/Calendas/`. GitHub Pages solo sirve archivos estáticos: la función del contador no se publica y el juego oculta el porcentaje global. Para tenerlo, despliega en Netlify (abajo).
+
 ## Desplegar en Netlify
 
 1. Sube el repositorio a GitHub.

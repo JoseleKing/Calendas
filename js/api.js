@@ -1,7 +1,8 @@
 // Cliente del contador global. Cualquier fallo (sin backend, sin red, timeout,
 // respuesta rara) devuelve null y la interfaz simplemente oculta el porcentaje.
 
-const URL_API = '/api/respuestas';
+// Relativa, para que funcione también publicada en una subcarpeta (GitHub Pages).
+const URL_API = 'api/respuestas';
 const TIEMPO_MAXIMO_MS = 3500;
 
 async function peticion(url, opciones = {}) {
