@@ -1,6 +1,6 @@
 # Calendas
 
-**¿Quién lo dijo primero?** Un juego diario sobre la historia del léxico español. Cada día hay un único duelo entre dos palabras, el mismo para todos, y el jugador toca la que entró antes en el español. Tras responder se revelan los años de primera documentación, una línea de tiempo, una curiosidad y el porcentaje de jugadores que acertó.
+**Ponle fecha a las palabras.** Un juego diario sobre la historia del léxico español. Cada día hay un único duelo entre dos palabras, el mismo para todos, y el jugador toca la que entró antes en el español. Tras responder se revelan los años de primera documentación, una línea de tiempo, una curiosidad y el porcentaje de jugadores que acertó.
 
 > ⚠️ **Las fechas y curiosidades del banco de ejemplo son provisionales y pueden ser inexactas.**
 > Todos los duelos de `public/data/duelos.json` llevan `"verificado": false`. Antes de publicar hay que comprobar cada año de primera documentación (y cada curiosidad) con fuentes como el **CORDE** (Corpus Diacrónico del Español), el **CDH** (Corpus del Diccionario histórico), el **Diccionario histórico de la lengua española** de la RAE o el *Diccionario crítico etimológico* de Corominas y Pascual, y cambiar el campo a `"verificado": true`. Ojo con los años redondos: casi siempre son estimaciones.

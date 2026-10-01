@@ -2,7 +2,7 @@
   "name": "calendas",
   "version": "0.1.0",
   "private": true,
-  "description": "Calendas: ¿quién lo dijo primero? Un duelo diario sobre la historia del léxico español.",
+  "description": "Calendas: ponle fecha a las palabras. Un duelo diario sobre la historia del léxico español.",
   "type": "module",
   "scripts": {
     "dev": "wrangler d1 migrations apply calendas --local && wrangler dev",
