@@ -68,12 +68,6 @@ function retirarPortada() {
   const FUNDIDO_MS = 400;
   const portada = document.getElementById('portada');
   if (!portada) return;
-  // Solo una vez por sesión: al moverse por el archivo no vuelve a salir.
-  try {
-    sessionStorage.setItem('calendas:portada', '1');
-  } catch {
-    // Sin sessionStorage la portada sale en cada carga; no pasa nada.
-  }
   if (document.documentElement.classList.contains('sin-portada')) {
     portada.remove();
     return;
@@ -98,6 +92,7 @@ async function iniciar() {
   }
   pintarEstadisticas();
   prepararArchivo();
+  document.addEventListener('click', saltarPortadaAlNavegar);
   $('#compartir').addEventListener('click', alCompartir);
   document.addEventListener('visibilitychange', recargarSiCambioElDia);
 
@@ -270,5 +265,15 @@ function pintarArchivo(ultimo) {
     const elemento = document.createElement('li');
     elemento.append(enlace);
     lista.append(elemento);
+  }
+}
+
+/** Al ir a otro duelo desde dentro del juego, la página siguiente no repite la portada. */
+function saltarPortadaAlNavegar(evento) {
+  if (!evento.target.closest('.archivo-dia, #volver')) return;
+  try {
+    sessionStorage.setItem('calendas:sin-portada', '1');
+  } catch {
+    // Sin sessionStorage la portada también sale al navegar; no pasa nada.
   }
 }

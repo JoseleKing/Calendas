@@ -69,7 +69,7 @@ Sin contador, el juego funciona igual y simplemente no muestra el porcentaje glo
 - Cada duelo del archivo se abre con `?duelo=N`. Un número fuera de rango (futuro o el de hoy) lleva al duelo de hoy.
 - Las partidas del archivo cuentan para jugados y aciertos, pero **no para la racha**: la racha cuenta los días en que se jugó el duelo de ese mismo día.
 - Las partidas del archivo no se envían al contador global. El porcentaje que se muestra es el de quienes jugaron aquel día.
-- La portada con el logo solo sale la primera vez de cada sesión, para que no se repita al moverse por el archivo.
+- La portada con el logo sale en cada carga de la página, incluidas las recargas. Solo se la salta al moverse dentro del juego (abrir un duelo del archivo o volver al de hoy).
 
 ## Añadir duelos
 

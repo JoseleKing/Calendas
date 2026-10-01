@@ -13,8 +13,14 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="css/estilos.css">
   <script>
-    // La portada con el logo solo sale la primera vez de cada sesión.
-    try { if (sessionStorage.getItem('calendas:portada')) document.documentElement.classList.add('sin-portada'); } catch {}
+    // La portada con el logo sale en cada carga, salvo al navegar dentro del juego
+    // (archivo de duelos, volver al de hoy): esos enlaces dejan esta marca de un solo uso.
+    try {
+      if (sessionStorage.getItem('calendas:sin-portada')) {
+        sessionStorage.removeItem('calendas:sin-portada');
+        document.documentElement.classList.add('sin-portada');
+      }
+    } catch {}
   </script>
   <script type="module" src="js/app.js"></script>
 </head>
