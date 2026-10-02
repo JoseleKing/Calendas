@@ -1,7 +1,11 @@
 /* Volver a Almanaque
    Muestra una franja con una mano ☜ en lo alto del juego para regresar a Almanaque.
-   Solo aparece si se llegó desde Almanaque (que añade ?desde=almanaque al enlace)
+   Solo aparece si se llegó desde Almanaque (que añade ?desde=almanaque&juego=<id> al enlace)
    y se mantiene mientras siga abierta esa pestaña.
+   Cuando el jugador termine la partida de hoy, el juego debe llamar a
+     window.almanaqueHecho && window.almanaqueHecho();
+   (también al abrir el juego con la partida de hoy ya terminada). Así la mano ☜ lleva
+   a Almanaque el aviso y la hoja del juego se marca como «Hecho».
    Copia de referencia: se guarda en el repo de Almanaque, en para-los-juegos/.
    Cada juego incluye su propia copia con:
    <script src="volver-almanaque.js" defer></script> */
@@ -10,24 +14,62 @@
 
   var ALMANAQUE = 'https://joseleking.github.io/Almanaque/';
   var CLAVE = 'almanaque:volver';
+  var CLAVE_JUEGO = 'almanaque:juego';
+  var CLAVE_HECHO = 'almanaque:hecho';
   var desdeAlmanaque = false;
+  var juego = null;
+
+  function leer(clave) {
+    try { return window.sessionStorage.getItem(clave); } catch (e) { return null; }
+  }
+
+  function guardar(clave, valor) {
+    try { window.sessionStorage.setItem(clave, valor); } catch (e) { /* sin almacenamiento */ }
+  }
 
   try {
     var url = new URL(window.location.href);
     if (url.searchParams.get('desde') === 'almanaque') {
       desdeAlmanaque = true;
-      // Limpia la dirección para que no se comparta con el parámetro.
+      juego = url.searchParams.get('juego');
+      // Limpia la dirección para que no se comparta con los parámetros.
       url.searchParams.delete('desde');
+      url.searchParams.delete('juego');
       window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
     }
   } catch (e) { /* navegador antiguo: se ignora */ }
 
-  try {
-    if (desdeAlmanaque) window.sessionStorage.setItem(CLAVE, '1');
-    else desdeAlmanaque = window.sessionStorage.getItem(CLAVE) === '1';
-  } catch (e) { /* sin almacenamiento: vale con el parámetro */ }
+  if (desdeAlmanaque) {
+    guardar(CLAVE, '1');
+    if (juego) guardar(CLAVE_JUEGO, juego);
+  } else {
+    desdeAlmanaque = leer(CLAVE) === '1';
+    juego = leer(CLAVE_JUEGO);
+  }
+
+  function hoy() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+
+  // El juego avisa de que la partida de hoy está terminada.
+  window.almanaqueHecho = function () {
+    guardar(CLAVE_HECHO, hoy());
+    actualizarEnlace();
+  };
 
   if (!desdeAlmanaque) return;
+
+  // La mano lleva ?hecho=<id> solo si el juego ha avisado hoy en esta pestaña.
+  function destino() {
+    if (!juego || leer(CLAVE_HECHO) !== hoy()) return ALMANAQUE;
+    return ALMANAQUE + '?hecho=' + encodeURIComponent(juego);
+  }
+
+  function actualizarEnlace() {
+    var enlace = document.getElementById('almanaque-volver');
+    if (enlace) enlace.href = destino();
+  }
 
   function mostrar() {
     if (document.getElementById('almanaque-volver')) return;
@@ -51,8 +93,10 @@
 
     var enlace = document.createElement('a');
     enlace.id = 'almanaque-volver';
-    enlace.href = ALMANAQUE;
+    enlace.href = destino();
     enlace.setAttribute('aria-label', 'Volver a Almanaque');
+    // Se recalcula al tocar por si la pestaña ha pasado la medianoche.
+    enlace.addEventListener('click', function () { enlace.href = destino(); });
 
     var mano = document.createElement('span');
     mano.className = 'almanaque-volver__mano';

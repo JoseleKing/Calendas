@@ -138,6 +138,7 @@ function responder(palabra) {
 }
 
 function mostrarResultado(eleccion, animar) {
+  if (!esArchivo) avisarAlmanaque();
   revelar({
     cartas: seleccion.cartas,
     eleccion,
@@ -147,6 +148,11 @@ function mostrarResultado(eleccion, animar) {
   });
   if (esArchivo) $('#cuenta-atras').hidden = true;
   else iniciarCuentaAtras();
+}
+
+/** Con la partida de hoy ya jugada, la mano ☜ marca Calendas como «Hecho» en Almanaque. */
+function avisarAlmanaque() {
+  window.almanaqueHecho?.();
 }
 
 /**
