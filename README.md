@@ -25,9 +25,9 @@ public/                        La web: todo lo que se publica
   data/duelos.json             Banco de duelos
 assets/                        SVG de origen de los iconos
 scripts/generar-iconos.mjs     Genera los PNG de public/icons a partir de assets/ (npm run iconos)
-worker/index.js                Worker de Cloudflare: el contador /api/respuestas (y public/ en local)
+worker/index.js                Worker de Cloudflare: el contador /api/respuestas
 migrations/                    Esquema de la base de datos D1 del contador
-wrangler.jsonc                 Configuración de Cloudflare (Worker, archivos estáticos y D1)
+wrangler.jsonc                 Configuración de Cloudflare (Worker y D1)
 .github/workflows/pages.yml    Publica public/ en GitHub Pages en cada push a main
 ```
 
@@ -44,7 +44,7 @@ npm install
 npm run dev                  # http://localhost:8787
 ```
 
-`npm run dev` prepara una base de datos D1 local y arranca el Worker con `wrangler dev`, que sirve la web y `/api/respuestas` a la vez. Las respuestas en local van a esa base de datos local, nunca a la real.
+`npm run dev` prepara una base de datos D1 local y arranca el Worker con `wrangler dev --assets public`, que sirve la web y `/api/respuestas` a la vez. La web solo se sirve así en local: a Cloudflare solo se sube el contador. Las respuestas en local van a esa base de datos local, nunca a la real.
 
 **Solo la web:**
 

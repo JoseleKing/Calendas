@@ -3,7 +3,8 @@
 // La web se publica en GitHub Pages (https://joseleking.github.io/Calendas/) y llama
 // aquí desde otro dominio, así que las respuestas llevan cabeceras CORS para ese origen.
 // Quien entre por la dirección antigua (calendas.calendas.workers.dev) se redirige a
-// GitHub Pages. En local (npm run dev) el Worker sigue sirviendo public/ y el contador juntos.
+// GitHub Pages. La web no se sube a Cloudflare: en local, npm run dev la sirve con
+// `wrangler dev --assets public` junto al contador.
 //
 //   GET  /api/respuestas?fecha=AAAA-MM-DD     → { aciertos, total }
 //   POST /api/respuestas { fecha, palabra }   → { aciertos, total } (ya incluyendo esta respuesta)
@@ -85,10 +86,9 @@ async function respuestas(peticion, db) {
 
 export default {
   async fetch(peticion, env) {
-    // run_worker_first: todas las peticiones pasan por aquí, también las de archivos.
     const url = new URL(peticion.url);
     if (url.pathname === '/api/respuestas') return respuestas(peticion, env.DB);
     if (url.hostname === HOST_ANTIGUO) return Response.redirect(WEB + url.pathname + url.search, 301);
-    return env.ASSETS.fetch(peticion);
+    return new Response('No encontrado', { status: 404 });
   },
 };
