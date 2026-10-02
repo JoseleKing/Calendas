@@ -1,6 +1,7 @@
 // Estadísticas locales. Si localStorage no está disponible (modo privado,
 // datos bloqueados…) todo sigue funcionando en memoria durante la sesión.
 
+import { clavePartida } from './duelos.js';
 import { sumarDias } from './fecha.js';
 
 const CLAVE_BASE = 'calendas:v1';
@@ -34,18 +35,19 @@ function guardar() {
   }
 }
 
-export function partidaDe(fecha) {
-  return leer().partidas[fecha] ?? null;
+export function partidaDe(fecha, ronda = 1) {
+  return leer().partidas[clavePartida(fecha, ronda)] ?? null;
 }
 
 /**
- * Fallar no rompe la racha; solo la rompe saltarse un día. Los duelos del
- * archivo suman a jugados y aciertos, pero no a la racha: esta cuenta los días
- * en que se jugó el duelo de ese mismo día.
+ * Fallar no rompe la racha; solo la rompe saltarse un día. Cada duelo suma a
+ * jugados y aciertos; la racha cuenta los días en que se jugó algún duelo de ese
+ * mismo día. Los duelos del archivo no cuentan para la racha.
  */
-export function registrarPartida(fecha, { dueloId, eleccion, acierto, archivo = false }) {
+export function registrarPartida(fecha, ronda, { dueloId, eleccion, acierto, archivo = false }) {
   const e = leer();
-  if (e.partidas[fecha]) return e.partidas[fecha];
+  const clave = clavePartida(fecha, ronda);
+  if (e.partidas[clave]) return e.partidas[clave];
 
   // La comparación de cadenas AAAA-MM-DD es cronológica. Jugar una fecha
   // anterior a la última (solo posible con ?fecha=) no toca la racha.
@@ -56,13 +58,13 @@ export function registrarPartida(fecha, { dueloId, eleccion, acierto, archivo = 
   }
   e.jugados += 1;
   if (acierto) e.aciertos += 1;
-  e.partidas[fecha] = { dueloId, eleccion, acierto, archivo, enviada: false };
+  e.partidas[clave] = { dueloId, eleccion, acierto, archivo, enviada: false };
   guardar();
-  return e.partidas[fecha];
+  return e.partidas[clave];
 }
 
-export function marcarEnviada(fecha) {
-  const partida = partidaDe(fecha);
+export function marcarEnviada(fecha, ronda) {
+  const partida = partidaDe(fecha, ronda);
   if (!partida) return;
   partida.enviada = true;
   guardar();

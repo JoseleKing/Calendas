@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Calendas · Ponle fecha a las palabras</title>
-  <meta name="description" content="Ponle fecha a las palabras: cada día, un duelo entre dos palabras. ¿Cuál entró antes en el español?">
+  <meta name="description" content="Ponle fecha a las palabras: cada día, tres duelos entre dos palabras. ¿Cuál entró antes en el español?">
   <meta name="theme-color" content="#f3ead8" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#1d1813" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="icons/sello.svg" type="image/svg+xml">
@@ -61,7 +61,8 @@
     </section>
 
     <section class="duelo" id="duelo">
-      <a class="volver" id="volver" hidden>← Volver al duelo de hoy</a>
+      <a class="volver" id="volver" hidden>← Volver a los duelos de hoy</a>
+      <nav class="rondas" id="rondas" aria-label="Duelos del día" hidden></nav>
       <h2 class="pregunta">Ponle fecha a las palabras</h2>
       <p class="instruccion" id="instruccion">Toca la palabra que entró antes en el español.</p>
       <div class="cartas">
@@ -88,10 +89,13 @@
         <figcaption>Curiosidad</figcaption>
         <p id="curiosidad"></p>
       </figure>
-      <button type="button" class="boton-compartir" id="compartir">Compartir resultado</button>
-      <a class="boton-compartir boton-almanaque" data-almanaque-volver hidden href="https://joseleking.github.io/Almanaque/">☜ Regresar al Almanaque</a>
-      <p class="aviso" id="aviso" role="status"></p>
-      <p class="cuenta-atras" id="cuenta-atras">Próximo duelo en <span id="cuenta">--:--:--</span></p>
+      <a class="boton-compartir boton-siguiente" id="siguiente" hidden></a>
+      <div id="final">
+        <button type="button" class="boton-compartir" id="compartir">Compartir resultado</button>
+        <a class="boton-compartir boton-almanaque" data-almanaque-volver hidden href="https://joseleking.github.io/Almanaque/">☜ Regresar al Almanaque</a>
+        <p class="aviso" id="aviso" role="status"></p>
+        <p class="cuenta-atras" id="cuenta-atras">Nuevos duelos en <span id="cuenta">--:--:--</span></p>
+      </div>
     </section>
 
     <section class="estadisticas" aria-label="Estadísticas">

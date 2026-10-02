@@ -6,15 +6,18 @@
 // GitHub Pages. La web no se sube a Cloudflare: en local, npm run dev la sirve con
 // `wrangler dev --assets public` junto al contador.
 //
-//   GET  /api/respuestas?fecha=AAAA-MM-DD     → { aciertos, total }
-//   POST /api/respuestas { fecha, palabra }   → { aciertos, total } (ya incluyendo esta respuesta)
+//   GET  /api/respuestas?fecha=AAAA-MM-DD&ronda=N     → { aciertos, total }
+//   POST /api/respuestas { fecha, ronda, palabra }    → { aciertos, total } (ya incluyendo esta respuesta)
 //
-// Los totales viven en D1, una fila por día. Cada respuesta suma con un único
-// UPSERT atómico, así que no se pierden respuestas aunque lleguen a la vez.
+// `ronda` es el número de duelo dentro del día (1-3; si falta, 1). Los totales viven
+// en D1, una fila por duelo: la columna `fecha` guarda la misma clave que el cliente,
+// 'AAAA-MM-DD' para el primer duelo del día (como cuando había uno solo) y
+// 'AAAA-MM-DD/N' para los siguientes. Cada respuesta suma con un único UPSERT
+// atómico, así que no se pierden respuestas aunque lleguen a la vez.
 // El acierto se calcula aquí con el mismo banco y la misma lógica que el cliente.
 
 import banco from '../public/data/duelos.json';
-import { elegirDuelo } from '../public/js/duelos.js';
+import { clavePartida, duelosDelDia } from '../public/js/duelos.js';
 import { esFechaValida, fechaMadrid, sumarDias } from '../public/js/fecha.js';
 
 const WEB = 'https://joseleking.github.io/Calendas';
@@ -35,9 +38,15 @@ const json = (datos, estado = 200) =>
     headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...CORS },
   });
 
-async function totales(db, fecha) {
-  const fila = await db.prepare('SELECT aciertos, total FROM conteo WHERE fecha = ?1').bind(fecha).first();
+async function totales(db, clave) {
+  const fila = await db.prepare('SELECT aciertos, total FROM conteo WHERE fecha = ?1').bind(clave).first();
   return { aciertos: fila?.aciertos ?? 0, total: fila?.total ?? 0 };
+}
+
+/** El duelo `ronda` de ese día, o null si el día no tiene tantos duelos. */
+function dueloDe(fecha, ronda = 1) {
+  if (!Number.isInteger(ronda)) return null;
+  return duelosDelDia(banco.duelos, fecha)[ronda - 1] ?? null;
 }
 
 async function respuestas(peticion, db) {
@@ -45,9 +54,12 @@ async function respuestas(peticion, db) {
   if (peticion.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
 
   if (peticion.method === 'GET') {
-    const fecha = new URL(peticion.url).searchParams.get('fecha');
+    const parametros = new URL(peticion.url).searchParams;
+    const fecha = parametros.get('fecha');
+    const ronda = Number(parametros.get('ronda') ?? 1);
     if (!esFechaValida(fecha)) return json({ error: 'fecha no válida' }, 400);
-    return json(await totales(db, fecha));
+    if (!dueloDe(fecha, ronda)) return json({ error: 'ronda no válida' }, 400);
+    return json(await totales(db, clavePartida(fecha, ronda)));
   }
 
   if (peticion.method === 'POST') {
@@ -57,7 +69,7 @@ async function respuestas(peticion, db) {
     } catch {
       return json({ error: 'JSON no válido' }, 400);
     }
-    const { fecha, palabra } = cuerpo ?? {};
+    const { fecha, ronda = 1, palabra } = cuerpo ?? {};
 
     // Se acepta hoy y ayer: quien abrió el duelo a las 23:59 puede responder a las 00:01.
     const hoy = fechaMadrid();
@@ -65,7 +77,9 @@ async function respuestas(peticion, db) {
       return json({ error: 'fecha fuera de plazo' }, 400);
     }
 
-    const { cartas, correcta } = elegirDuelo(banco.duelos, fecha);
+    const duelo = dueloDe(fecha, ronda);
+    if (!duelo) return json({ error: 'ronda no válida' }, 400);
+    const { cartas, correcta } = duelo;
     if (!cartas.some((carta) => carta.palabra === palabra)) {
       return json({ error: 'palabra no válida' }, 400);
     }
@@ -76,7 +90,7 @@ async function respuestas(peticion, db) {
          ON CONFLICT (fecha) DO UPDATE SET aciertos = aciertos + excluded.aciertos, total = total + 1
          RETURNING aciertos, total`,
       )
-      .bind(fecha, palabra === correcta ? 1 : 0)
+      .bind(clavePartida(fecha, ronda), palabra === correcta ? 1 : 0)
       .first();
     return json({ aciertos: fila.aciertos, total: fila.total });
   }

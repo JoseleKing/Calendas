@@ -1,6 +1,6 @@
 # Calendas
 
-**Ponle fecha a las palabras.** Un juego diario sobre la historia del léxico español. Cada día hay un único duelo entre dos palabras, el mismo para todos, y el jugador toca la que entró antes en el español. Tras responder se revelan los años de primera documentación, una línea de tiempo, una curiosidad y el porcentaje de jugadores que acertó.
+**Ponle fecha a las palabras.** Un juego diario sobre la historia del léxico español. Cada día hay tres duelos entre dos palabras, los mismos para todos, y en cada uno el jugador toca la palabra que entró antes en el español. Tras responder se revelan los años de primera documentación, una línea de tiempo, una curiosidad y el porcentaje de jugadores que acertó.
 
 > ⚠️ **Las fechas y curiosidades del banco de ejemplo son provisionales y pueden ser inexactas.**
 > Todos los duelos de `public/data/duelos.json` llevan `"verificado": false`. Antes de publicar hay que comprobar cada año de primera documentación (y cada curiosidad) con fuentes como el **CORDE** (Corpus Diacrónico del Español), el **CDH** (Corpus del Diccionario histórico), el **Diccionario histórico de la lengua española** de la RAE o el *Diccionario crítico etimológico* de Corominas y Pascual, y cambiar el campo a `"verificado": true`. Ojo con los años redondos: casi siempre son estimaciones.
@@ -17,7 +17,7 @@ public/                        La web: todo lo que se publica
   css/estilos.css              Estilos (tokens de color, cartas, animaciones, modo oscuro)
   js/app.js                    Arranque y flujo de la partida
   js/fecha.js                  Fecha de Madrid, número de duelo, cuenta atrás (módulo puro)
-  js/duelos.js                 Elección determinista del duelo del día y validación del banco
+  js/duelos.js                 Elección determinista de los duelos del día y validación del banco
   js/estadisticas.js           Rachas y aciertos en localStorage
   js/api.js                    Cliente del contador global (tolerante a fallos)
   js/revelacion.js             Revelación y línea de tiempo
@@ -68,58 +68,63 @@ Sin contador, el juego funciona igual y simplemente no muestra el porcentaje glo
 
 Los PNG se generan a partir de los SVG de `assets/` con `npm run iconos` (usa `sips`, de macOS). La «C» del sello está convertida a trazado, así que no dependen de ninguna fuente.
 
-## Cómo funciona el duelo del día
+## Cómo funcionan los duelos del día
 
 - La fecha es siempre la de **Europe/Madrid**, y el día cambia a medianoche de Madrid (con el horario de verano en cuenta).
-- El **día de la semana fija la dificultad**: lunes = 1 … domingo = 7.
-- Dentro de esa dificultad, los duelos se rotan **por semanas** en orden de `id`: con 2 duelos de dificultad 3, un miércoles sale el primero y el siguiente miércoles el segundo.
-- El orden de las dos cartas también depende de la fecha, para que la correcta no salga siempre arriba.
-- El **número de duelo** (#1, #2…) cuenta los días desde el lanzamiento, el 1 de octubre de 2026 (`FECHA_LANZAMIENTO` en `public/js/fecha.js`).
+- **Desde el 3 de octubre de 2026 hay tres duelos al día** (`FECHA_TRES_DUELOS` en `public/js/duelos.js`), sacados de un **calendario**: cada duelo nuevo lleva una `fecha` y ese día salen sus tres duelos, en orden de `id`. Conviene ordenarlos de más fácil a más difícil.
+- Arriba aparecen tres pestañas (*Duelo 1*, *Duelo 2*, *Duelo 3*) con el resultado de cada uno. Al responder, el botón lleva al siguiente duelo sin jugar; al terminar los tres aparecen *Compartir resultado* (`Calendas #3 ✅❌✅ 🔥4`), la cuenta atrás y el aviso de «Hecho» a Almanaque. Cada duelo se abre con `?partida=N`; sin ese parámetro se abre el primero sin jugar.
+- **Si un día no tiene duelos en el calendario**, el juego no se queda vacío: rota de tres en tres por los duelos sin `fecha` y avisa en la consola. Hay que ir añadiendo días al calendario antes de que se acabe.
+- **Los dos primeros días (1 y 2 de octubre) tuvieron un único duelo**, elegido con el sistema antiguo, que se conserva para que el archivo no cambie: el día de la semana fijaba la dificultad (lunes = 1 … domingo = 7) y dentro de ella se rotaba por semanas en orden de `id`. Solo usa los duelos sin `fecha`.
+- El orden de las dos cartas depende de la fecha y del número de duelo, para que la correcta no salga siempre arriba.
+- El **número del día** (#1, #2…) cuenta los días desde el lanzamiento, el 1 de octubre de 2026 (`FECHA_LANZAMIENTO` en `public/js/fecha.js`).
 
 ### Duelos anteriores
 
-- El botón **Duelos anteriores** abre la lista de días pasados, del de ayer al #1, con el resultado de cada uno o la opción de jugarlo. Aparece a partir del segundo día.
-- Cada duelo del archivo se abre con `?duelo=N`. Un número fuera de rango (futuro o el de hoy) lleva al duelo de hoy.
-- Las partidas del archivo cuentan para jugados y aciertos, pero **no para la racha**: la racha cuenta los días en que se jugó el duelo de ese mismo día.
+- El botón **Duelos anteriores** abre la lista de días pasados, del de ayer al #1, con el resultado de cada uno (*2 de 3*), *Seguir* si se dejó a medias o *Jugar*. Aparece a partir del segundo día.
+- Cada día del archivo se abre con `?duelo=N` (y `&partida=2` para uno de sus duelos). Un número fuera de rango (futuro o el de hoy) lleva a los duelos de hoy.
+- Cada duelo cuenta para jugados y aciertos. Las partidas del archivo **no cuentan para la racha**: la racha cuenta los días en que se jugó algún duelo de ese mismo día.
 - Las partidas del archivo no se envían al contador global. El porcentaje que se muestra es el de quienes jugaron aquel día.
 - La portada con el logo sale en cada carga de la página, incluidas las recargas. Solo se la salta al moverse dentro del juego (abrir un duelo del archivo o volver al de hoy).
 
 ## Añadir duelos
 
-Edita `public/data/duelos.json` y añade un objeto al array `duelos`:
+Edita `public/data/duelos.json` y añade **tres** objetos al array `duelos` por cada día nuevo:
 
 ```json
 {
-  "id": 15,
+  "id": 45,
+  "fecha": "2026-10-13",
   "palabraA": "sándwich",
   "anioA": 1890,
+  "fuenteA": "CORDE: 1890, autor, obra",
   "palabraB": "bocadillo",
   "anioB": 1600,
-  "dificultad": 3,
+  "fuenteB": "DHLE: 1600",
   "curiosidad": "Dos o tres líneas sobre la historia de las palabras.",
-  "verificado": false,
-  "fuenteA": "CORDE: 1890, autor, obra",
-  "fuenteB": "DHLE: 1600"
+  "verificado": false
 }
 ```
 
-- `id`: entero único. Fija el orden de rotación dentro de cada dificultad.
+- `id`: entero único. Dentro de un día, fija el orden de los tres duelos.
+- `fecha`: día en que sale (`AAAA-MM-DD`, desde el 3 de octubre de 2026).
 - `anioA` / `anioB`: año de primera documentación. No pueden coincidir.
-- `dificultad`: de 1 (fácil, lunes) a 7 (difícil, domingo).
 - Da igual qué palabra pongas como A o como B.
 - `fuenteA` / `fuenteB` (opcionales): de dónde sale cada año, para poder revisarlo. El juego no los usa.
-- Conviene que todas las dificultades tengan el mismo número de duelos, para que cada día de la semana tarde lo mismo en repetirse.
+- La consola avisa si un día no tiene exactamente tres duelos o si una palabra ya ha salido en otro duelo.
 
-**Importante:** cambiar el número de duelos de una dificultad cambia la rotación de ese día de la semana, **incluido el duelo de hoy** si es ese día. Para no cambiar el duelo a quien ya ha jugado, publica los cambios en un día de otra dificultad. Por ejemplo, añade duelos de dificultad 3 (miércoles) un jueves. El Worker usa el mismo JSON, así que web y contador siempre coinciden en cuál es la respuesta correcta.
+Los duelos 1 a 14 no llevan `fecha` sino `dificultad` (de 1 a 7): son los del sistema antiguo y los que rellenan los días sin calendario. **No les quites ni añadas duelos sin `fecha`**: cambiaría qué salió el 1 y el 2 de octubre en el archivo.
+
+**Importante:** no cambies los duelos de un día que ya ha empezado: quien ya jugó vería otras palabras. El Worker usa el mismo JSON, así que web y contador siempre coinciden en cuál es la respuesta correcta.
 
 ## Porcentaje global (contador)
 
 `worker/index.js` expone `/api/respuestas`:
 
-- `POST { fecha, palabra }`: registra la respuesta y devuelve `{ aciertos, total }`. El acierto se calcula en el servidor y solo se aceptan respuestas de hoy o de ayer, para quien responde justo después de medianoche.
-- `GET ?fecha=AAAA-MM-DD`: devuelve `{ aciertos, total }`.
+- `POST { fecha, ronda, palabra }`: registra la respuesta al duelo `ronda` (1, 2 o 3) de ese día y devuelve `{ aciertos, total }`. El acierto se calcula en el servidor y solo se aceptan respuestas de hoy o de ayer, para quien responde justo después de medianoche.
+- `GET ?fecha=AAAA-MM-DD&ronda=N`: devuelve `{ aciertos, total }`.
+- Si falta `ronda`, se entiende que es 1.
 
-Los totales se guardan en D1 (la base de datos SQLite de Cloudflare), una fila por día. Cada respuesta suma con una sola operación atómica, así que no se pierden respuestas aunque lleguen muchas a la vez. El cliente recuerda si ya envió su respuesta y la reintenta al volver a abrir si falló. Si el contador no responde en 3,5 s, el porcentaje se oculta.
+Los totales se guardan en D1 (la base de datos SQLite de Cloudflare), una fila por duelo. La columna `fecha` guarda `AAAA-MM-DD` para el primer duelo del día (como cuando había uno solo) y `AAAA-MM-DD/2` o `AAAA-MM-DD/3` para los otros, así que no hizo falta cambiar la tabla. Cada respuesta suma con una sola operación atómica, así que no se pierden respuestas aunque lleguen muchas a la vez. El cliente recuerda si ya envió su respuesta y la reintenta al volver a abrir si falló. Si el contador no responde en 3,5 s, el porcentaje se oculta.
 
 Limitación del prototipo: no hay protección contra envíos falsos desde fuera de la app.
 

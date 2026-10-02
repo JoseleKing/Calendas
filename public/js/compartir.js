@@ -1,7 +1,8 @@
 // Texto para compartir (sin revelar la respuesta) y su envío.
 
-export function textoCompartir({ numero, acierto, porcentaje, racha }) {
-  const resultado = acierto ? '✅' : '❌';
+/** `aciertos`: un booleano por duelo del día. */
+export function textoCompartir({ numero, aciertos, porcentaje, racha }) {
+  const resultado = aciertos.map((acierto) => (acierto ? '✅' : '❌')).join('');
   const global = porcentaje == null ? '' : ` (${porcentaje} %)`;
   return `Calendas #${numero} ${resultado}${global} 🔥${racha}`;
 }

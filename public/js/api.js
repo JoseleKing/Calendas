@@ -23,15 +23,15 @@ async function peticion(url, opciones = {}) {
   }
 }
 
-/** Registra la respuesta y devuelve los totales del día ya incluyéndola. */
-export function enviarRespuesta(fecha, palabra) {
+/** Registra la respuesta a un duelo del día (ronda 1, 2 o 3) y devuelve sus totales ya incluyéndola. */
+export function enviarRespuesta(fecha, ronda, palabra) {
   return peticion(URL_API, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fecha, palabra }),
+    body: JSON.stringify({ fecha, ronda, palabra }),
   });
 }
 
-export function pedirTotales(fecha) {
-  return peticion(`${URL_API}?fecha=${encodeURIComponent(fecha)}`);
+export function pedirTotales(fecha, ronda) {
+  return peticion(`${URL_API}?${new URLSearchParams({ fecha, ronda })}`);
 }
