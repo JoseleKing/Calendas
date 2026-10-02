@@ -528,6 +528,15 @@ button {
   transition: transform 0.15s ease;
 }
 
+.boton-almanaque {
+  margin-top: 0.6rem;
+  color: var(--tinta);
+  background: transparent;
+  border: 1px solid var(--tinta);
+  text-align: center;
+  text-decoration: none;
+}
+
 .boton-compartir:active {
   transform: scale(0.98);
 }
