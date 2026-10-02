@@ -1,8 +1,11 @@
 // Cliente del contador global. Cualquier fallo (sin backend, sin red, timeout,
 // respuesta rara) devuelve null y la interfaz simplemente oculta el porcentaje.
 
-// El Worker de Cloudflare sirve la web y el contador desde el mismo sitio.
-const URL_API = 'api/respuestas';
+// En GitHub Pages el contador vive en el Worker de Cloudflare, en otro dominio.
+// En local (npm run dev) el Worker sirve la web y el contador desde el mismo sitio.
+const URL_API = location.hostname.endsWith('github.io')
+  ? 'https://calendas.calendas.workers.dev/api/respuestas'
+  : 'api/respuestas';
 const TIEMPO_MAXIMO_MS = 3500;
 
 async function peticion(url, opciones = {}) {

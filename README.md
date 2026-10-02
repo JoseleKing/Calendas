@@ -25,9 +25,10 @@ public/                        La web: todo lo que se publica
   data/duelos.json             Banco de duelos
 assets/                        SVG de origen de los iconos
 scripts/generar-iconos.mjs     Genera los PNG de public/icons a partir de assets/ (npm run iconos)
-worker/index.js                Worker de Cloudflare: sirve public/ y el contador /api/respuestas
+worker/index.js                Worker de Cloudflare: el contador /api/respuestas (y public/ en local)
 migrations/                    Esquema de la base de datos D1 del contador
 wrangler.jsonc                 Configuración de Cloudflare (Worker, archivos estáticos y D1)
+.github/workflows/pages.yml    Publica public/ en GitHub Pages en cada push a main
 ```
 
 No hay framework ni paso de compilación: el navegador carga los módulos ES directamente.
@@ -122,11 +123,16 @@ Los totales se guardan en D1 (la base de datos SQLite de Cloudflare), una fila p
 
 Limitación del prototipo: no hay protección contra envíos falsos desde fuera de la app.
 
-## Publicar en Cloudflare
+## Publicar
 
-La web y el contador se publican juntos como un Worker de Cloudflare, en **https://calendas.calendas.workers.dev**. El plan gratuito basta, y el repo puede seguir siendo privado.
+El juego se publica en dos sitios, los dos automáticamente en cada push a `main`:
 
-**Primera vez (desde la terminal):**
+- **La web, en GitHub Pages:** **https://joseleking.github.io/Calendas/**, como el resto de juegos. La publica `.github/workflows/pages.yml`, que sube `public/` tal cual.
+- **El contador, en Cloudflare:** un Worker con la base de datos D1 en **https://calendas.calendas.workers.dev/api/respuestas**. GitHub Pages solo sirve archivos estáticos, así que no puede guardar las respuestas de todos. `js/api.js` llama al Worker cuando la web está en github.io, y el Worker solo acepta peticiones del navegador (CORS) desde `https://joseleking.github.io`. Cualquier otra ruta de calendas.calendas.workers.dev redirige a GitHub Pages, para que sigan funcionando los enlaces y las apps instaladas con la dirección antigua.
+
+**GitHub Pages, primera vez:** el repo tiene que ser público (con cuenta gratuita, Pages no publica repos privados). En **Settings → Pages**, elige *Source: GitHub Actions*.
+
+**Cloudflare, primera vez (desde la terminal):**
 
 ```sh
 npx wrangler login                     # abre el navegador para entrar en Cloudflare
@@ -134,6 +140,6 @@ npx wrangler d1 create calendas        # solo si se monta en otra cuenta: copia 
 npm run desplegar                      # crea la tabla en D1 y publica el Worker
 ```
 
-**Publicación automática en cada push:** en el panel de Cloudflare, abre **Workers & Pages → calendas → Settings → Build → Connect** y elige el repo `Calendas` de GitHub, rama `main`. Pon como *Deploy command* `npm run desplegar`, para que aplique también las migraciones nuevas de la base de datos.
+**Publicación automática del Worker en cada push:** en el panel de Cloudflare, abre **Workers & Pages → calendas → Settings → Build → Connect** y elige el repo `Calendas` de GitHub, rama `main`. Pon como *Deploy command* `npm run desplegar`, para que aplique también las migraciones nuevas de la base de datos.
 
 **Cambios en la base de datos:** añade un archivo nuevo en `migrations/` (`0002_….sql`). `npm run desplegar` lo aplica antes de publicar.
