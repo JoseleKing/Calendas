@@ -228,9 +228,22 @@ function mostrarResultado(eleccion, animar) {
   else if (siguiente === null) iniciarCuentaAtras();
 }
 
-/** Con todos los duelos de hoy jugados, la mano ☜ marca Calendas como «Hecho» en Almanaque. */
+/**
+ * Con todos los duelos de hoy jugados, la mano ☜ marca Calendas como «Hecho» en Almanaque,
+ * y su hoja muestra los aciertos del día y la racha. En modo desarrollo no se manda el
+ * resultado: es de un día simulado.
+ */
 function avisarAlmanaque() {
-  window.almanaqueHecho?.();
+  if (modoDesarrollo) {
+    window.almanaqueHecho?.();
+    return;
+  }
+  const partidas = partidasDe(fecha, selecciones.length);
+  window.almanaqueHecho?.({
+    aciertos: partidas.filter((partida) => partida?.acierto).length,
+    total: partidas.length,
+    racha: estadisticas.rachaActual(hoy),
+  });
 }
 
 /**
