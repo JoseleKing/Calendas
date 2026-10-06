@@ -73,7 +73,8 @@ Los PNG se generan a partir de los SVG de `assets/` con `npm run iconos` (usa `s
 - La fecha es siempre la de **Europe/Madrid**, y el día cambia a medianoche de Madrid (con el horario de verano en cuenta).
 - **Desde el 3 de octubre de 2026 hay tres duelos al día** (`FECHA_TRES_DUELOS` en `public/js/duelos.js`), sacados de un **calendario**: cada duelo nuevo lleva una `fecha` y ese día salen sus tres duelos, en orden de `id`. Conviene ordenarlos de más fácil a más difícil.
 - Arriba aparecen tres pestañas (*Duelo 1*, *Duelo 2*, *Duelo 3*) con el resultado de cada uno. Al responder, el botón lleva al siguiente duelo sin jugar; al terminar los tres aparecen *Compartir resultado* (`Calendas #3 ✅❌✅ 🔥4`), la cuenta atrás y el aviso de «Hecho» a Almanaque. Cada duelo se abre con `?partida=N`; sin ese parámetro se abre el primero sin jugar.
-- **Si un día no tiene duelos en el calendario**, el juego no se queda vacío: rota de tres en tres por los duelos sin `fecha` y avisa en la consola. Hay que ir añadiendo días al calendario antes de que se acabe.
+- **El calendario es un ciclo** que termina el 10 de noviembre de 2026 (`FIN_DEL_CICLO` en `public/js/duelos.js`). Desde el día siguiente vuelve a empezar por el día del lanzamiento: el 11 de noviembre salen los duelos del 1 de octubre (uno solo, como aquel día), el 12 los del 2, el 13 los del 3 de octubre, y así sucesivamente. El número del día sigue creciendo (#42, #43…), y las estadísticas y el contador se guardan con la fecha real, así que no se mezclan con las de la primera vuelta. Si añades días al calendario, mueve `FIN_DEL_CICLO` al último.
+- **Si un día no tiene duelos en el calendario**, el juego no se queda vacío: rota de tres en tres por los duelos sin `fecha` y avisa en la consola.
 - **Los dos primeros días (1 y 2 de octubre) tuvieron un único duelo**, elegido con el sistema antiguo, que se conserva para que el archivo no cambie: el día de la semana fijaba la dificultad (lunes = 1 … domingo = 7) y dentro de ella se rotaba por semanas en orden de `id`. Solo usa los duelos sin `fecha`.
 - El orden de las dos cartas depende de la fecha y del número de duelo, para que la correcta no salga siempre arriba.
 - El **número del día** (#1, #2…) cuenta los días desde el lanzamiento, el 1 de octubre de 2026 (`FECHA_LANZAMIENTO` en `public/js/fecha.js`).
@@ -114,7 +115,7 @@ Edita `public/data/duelos.json` y añade **tres** objetos al array `duelos` por 
 
 Los duelos 1 a 14 no llevan `fecha` sino `dificultad` (de 1 a 7): son los del sistema antiguo y los que rellenan los días sin calendario. **No les quites ni añadas duelos sin `fecha`**: cambiaría qué salió el 1 y el 2 de octubre en el archivo.
 
-**Importante:** no cambies los duelos de un día que ya ha empezado: quien ya jugó vería otras palabras. El Worker usa el mismo JSON, así que web y contador siempre coinciden en cuál es la respuesta correcta.
+**Importante:** no cambies los duelos de un día que ya ha empezado: quien ya jugó vería otras palabras. El Worker usa el mismo JSON, así que web y contador siempre coinciden en cuál es la respuesta correcta. Pero el Worker lleva el JSON y `duelos.js` empaquetados: **cada vez que cambies el calendario o esa lógica, vuelve a desplegarlo** (`npm run desplegar`), o el contador no sabrá qué duelos tocan los días nuevos.
 
 ## Porcentaje global (contador)
 

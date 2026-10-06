@@ -2,11 +2,18 @@
 // Módulo puro salvo `cargarBanco`: el Worker de Cloudflare reutiliza `duelosDelDia`
 // para saber cuál es la respuesta correcta sin fiarse del cliente.
 
-import { diaSemana, esFechaValida, indiceDia, semanaDesdeLanzamiento } from './fecha.js';
+import { FECHA_LANZAMIENTO, diaSemana, esFechaValida, indiceDia, semanaDesdeLanzamiento, sumarDias } from './fecha.js';
 
 /** Desde este día hay tres duelos diarios, sacados del calendario (campo `fecha`). */
 export const FECHA_TRES_DUELOS = '2026-10-03';
 export const DUELOS_POR_DIA = 3;
+
+/**
+ * Último día del ciclo. Desde el día siguiente, el calendario vuelve a empezar por el
+ * día del lanzamiento (el #1), con los mismos duelos. Si se añaden días al calendario,
+ * hay que mover esta fecha al último de ellos.
+ */
+export const FIN_DEL_CICLO = '2026-11-10';
 
 /**
  * Clave de cada duelo del día, en las estadísticas locales y en el contador: el día
@@ -56,19 +63,31 @@ function dueloSemanal(duelos, fecha) {
 }
 
 /**
- * Los duelos de un día, en orden de juego. Desde FECHA_TRES_DUELOS son los que
- * llevan esa `fecha`, por orden de id. Si un día no tiene duelos programados,
+ * La fecha cuyos duelos tocan el día `fecha`: ella misma hasta FIN_DEL_CICLO y, después,
+ * la del día equivalente del primer ciclo (el 11 de noviembre de 2026 vuelve al 1 de octubre).
+ */
+export function fechaDelCiclo(fecha) {
+  if (fecha <= FIN_DEL_CICLO) return fecha;
+  const largo = indiceDia(FIN_DEL_CICLO) - indiceDia(FECHA_LANZAMIENTO) + 1;
+  return sumarDias(FECHA_LANZAMIENTO, modulo(indiceDia(fecha) - indiceDia(FECHA_LANZAMIENTO), largo));
+}
+
+/**
+ * Los duelos de un día, en orden de juego (pasado FIN_DEL_CICLO, los del día
+ * equivalente del primer ciclo). Desde FECHA_TRES_DUELOS son los que llevan esa
+ * `fecha`, por orden de id. Si un día no tiene duelos programados,
  * se rota de tres en tres por los duelos sin fecha (o por todos, si no hay)
  * para que el juego no se quede vacío.
  */
 export function duelosDelDia(duelos, fecha) {
-  if (fecha < FECHA_TRES_DUELOS) return [dueloSemanal(duelos, fecha)];
+  const delCiclo = fechaDelCiclo(fecha);
+  if (delCiclo < FECHA_TRES_DUELOS) return [dueloSemanal(duelos, delCiclo)];
 
-  let delDia = duelos.filter((d) => d.fecha === fecha).sort(porId);
+  let delDia = duelos.filter((d) => d.fecha === delCiclo).sort(porId);
   if (delDia.length === 0) {
     const sinFecha = duelos.filter((d) => !d.fecha);
     const todos = [...(sinFecha.length ? sinFecha : duelos)].sort(porId);
-    const inicio = (indiceDia(fecha) - indiceDia(FECHA_TRES_DUELOS)) * DUELOS_POR_DIA;
+    const inicio = (indiceDia(delCiclo) - indiceDia(FECHA_TRES_DUELOS)) * DUELOS_POR_DIA;
     delDia = Array.from({ length: DUELOS_POR_DIA }, (_, i) => todos[modulo(inicio + i, todos.length)]);
   }
   return delDia.map((duelo, i) => seleccion(duelo, `${fecha}/${i + 1}`));

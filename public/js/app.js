@@ -12,7 +12,7 @@ import {
   numeroDuelo,
   sumarDias,
 } from './fecha.js';
-import { DUELOS_POR_DIA, FECHA_TRES_DUELOS, cargarBanco, duelosDelDia, ultimoDiaProgramado } from './duelos.js';
+import { DUELOS_POR_DIA, FECHA_TRES_DUELOS, cargarBanco, duelosDelDia, fechaDelCiclo, ultimoDiaProgramado } from './duelos.js';
 import * as estadisticas from './estadisticas.js';
 import { enviarRespuesta, pedirTotales } from './api.js';
 import { revelar } from './revelacion.js';
@@ -69,7 +69,7 @@ function enlaceRonda(r) {
 
 /** Duelos de un día sin necesidad de cargar el banco. */
 function duelosEn(dia) {
-  return dia < FECHA_TRES_DUELOS ? 1 : DUELOS_POR_DIA;
+  return fechaDelCiclo(dia) < FECHA_TRES_DUELOS ? 1 : DUELOS_POR_DIA;
 }
 
 function partidasDe(dia, n) {
@@ -136,7 +136,8 @@ async function iniciar() {
   try {
     const banco = await cargarBanco();
     const ultimo = ultimoDiaProgramado(banco);
-    if (fecha >= FECHA_TRES_DUELOS && (!ultimo || fecha > ultimo)) {
+    const delCiclo = fechaDelCiclo(fecha);
+    if (delCiclo >= FECHA_TRES_DUELOS && (!ultimo || delCiclo > ultimo)) {
       console.warn(`Calendas: no hay duelos programados para el ${fecha}; se repiten duelos del banco.`);
     }
     selecciones = duelosDelDia(banco, fecha);
