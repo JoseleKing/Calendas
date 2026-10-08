@@ -5,8 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Calendas · Ponle fecha a las palabras</title>
   <meta name="description" content="Ponle fecha a las palabras: cada día, tres duelos entre dos palabras. ¿Cuál entró antes en el español?">
-  <meta name="theme-color" content="#f3ead8" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#1d1813" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f3ead8">
+  <script>
+    // Modo claro u oscuro: el que se elija en Almanaque, común a todos los juegos. Sin elegir, claro.
+    try {
+      if (localStorage.getItem('almanaque:tema') === 'dark') {
+        document.documentElement.dataset.theme = 'dark';
+        document.querySelector('meta[name="theme-color"]').content = '#1d1813';
+      }
+    } catch (e) {}
+  </script>
   <link rel="icon" href="icons/sello.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
   <!-- iPhone: icono y nombre al «Añadir a pantalla de inicio» (iOS no usa iconos SVG). -->
