@@ -1,10 +1,14 @@
 // Texto para compartir (sin revelar la respuesta) y su envío.
 
-/** `aciertos`: un booleano por duelo del día. */
-export function textoCompartir({ numero, aciertos, porcentaje, racha }) {
-  const resultado = aciertos.map((acierto) => (acierto ? '✅' : '❌')).join('');
-  const global = porcentaje == null ? '' : ` (${porcentaje} %)`;
-  return `Calendas #${numero} ${resultado}${global} 🔥${racha}`;
+/**
+ * `aciertos`: un booleano por duelo del día. Una marca por duelo: ▰ acertado, ▱ fallado.
+ *   Calendas nº 7 ▰▱▰ 2/3 aciertos
+ *   joseleking.github.io/Calendas
+ */
+export function textoCompartir({ numero, aciertos }) {
+  const marcas = aciertos.map((acierto) => (acierto ? '▰' : '▱')).join('');
+  const total = aciertos.filter(Boolean).length;
+  return `Calendas nº ${numero} ${marcas} ${total}/${aciertos.length} aciertos\njoseleking.github.io/Calendas`;
 }
 
 async function copiar(texto) {

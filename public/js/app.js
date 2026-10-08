@@ -308,13 +308,7 @@ function recargarSiCambioElDia() {
 async function alCompartir() {
   const partidas = partidasDe(fecha, selecciones.length);
   if (!partidas.length || !partidas.every(Boolean)) return;
-  const texto = textoCompartir({
-    numero,
-    aciertos: partidas.map((partida) => partida.acierto),
-    // Con varios duelos no hay un único porcentaje del día.
-    porcentaje: partidas.length === 1 ? porcentajeHoy : null,
-    racha: estadisticas.rachaActual(hoy),
-  });
+  const texto = textoCompartir({ numero, aciertos: partidas.map((partida) => partida.acierto) });
   const resultado = await compartir(texto);
   const aviso = $('#aviso');
   aviso.textContent =
