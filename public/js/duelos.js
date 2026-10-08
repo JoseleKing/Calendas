@@ -13,7 +13,7 @@ export const DUELOS_POR_DIA = 3;
  * día del lanzamiento (el #1), con los mismos duelos. Si se añaden días al calendario,
  * hay que mover esta fecha al último de ellos.
  */
-export const FIN_DEL_CICLO = '2026-11-10';
+export const FIN_DEL_CICLO = '2026-12-10';
 
 /**
  * Clave de cada duelo del día, en las estadísticas locales y en el contador: el día
