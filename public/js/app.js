@@ -100,9 +100,9 @@ function siguienteSinJugar() {
  * ya han cargado: con red lenta se garantiza además que se vea VISIBLE_MS desde ese momento.
  */
 function retirarPortada() {
-  const PORTADA_MS = 1300;
+  const PORTADA_MS = 1500;
   const VISIBLE_MS = 800;
-  const FUNDIDO_MS = 400;
+  const FUNDIDO_MS = 500;
   const portada = document.getElementById('portada');
   if (!portada) return;
   if (document.documentElement.classList.contains('sin-portada')) {
