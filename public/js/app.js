@@ -7,7 +7,7 @@ import {
   FECHA_LANZAMIENTO,
   esFechaValida,
   fechaLarga,
-  fechaMadrid,
+  fechaLocal,
   msHastaProximoDuelo,
   numeroDuelo,
   sumarDias,
@@ -30,7 +30,7 @@ if (parametroFecha !== null && !modoDesarrollo) {
 }
 if (modoDesarrollo) estadisticas.usarModoDesarrollo();
 
-const hoy = modoDesarrollo ? parametroFecha : fechaMadrid();
+const hoy = modoDesarrollo ? parametroFecha : fechaLocal();
 const fecha = fechaDelArchivo(parametros.get('duelo')) ?? hoy;
 const esArchivo = fecha !== hoy;
 const numero = numeroDuelo(fecha);
@@ -301,7 +301,7 @@ function iniciarCuentaAtras() {
 
 /** Si la app se queda abierta y pasa la medianoche, carga el duelo nuevo al volver. */
 function recargarSiCambioElDia() {
-  if (!modoDesarrollo && document.visibilityState === 'visible' && fechaMadrid() !== hoy) {
+  if (!modoDesarrollo && document.visibilityState === 'visible' && fechaLocal() !== hoy) {
     location.reload();
   }
 }

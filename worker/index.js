@@ -18,7 +18,7 @@
 
 import banco from '../public/data/duelos.json';
 import { clavePartida, duelosDelDia } from '../public/js/duelos.js';
-import { esFechaValida, fechaMadrid, sumarDias } from '../public/js/fecha.js';
+import { esFechaValida, fechaUTC, sumarDias } from '../public/js/fecha.js';
 
 const WEB = 'https://joseleking.github.io/Calendas';
 const ORIGEN_WEB = 'https://joseleking.github.io';
@@ -71,9 +71,12 @@ async function respuestas(peticion, db) {
     }
     const { fecha, ronda = 1, palabra } = cuerpo ?? {};
 
-    // Se acepta hoy y ayer: quien abrió el duelo a las 23:59 puede responder a las 00:01.
-    const hoy = fechaMadrid();
-    if (!esFechaValida(fecha) || (fecha !== hoy && fecha !== sumarDias(hoy, -1))) {
+    // El día es el del jugador, y en el mundo conviven fechas de ayer, hoy y mañana
+    // en UTC (de UTC−12 a UTC+14). Se acepta además un día antes: quien abrió el
+    // duelo a las 23:59 puede responder a las 00:01.
+    const hoy = fechaUTC();
+    const plazo = [-2, -1, 0, 1].map((dias) => sumarDias(hoy, dias));
+    if (!esFechaValida(fecha) || !plazo.includes(fecha)) {
       return json({ error: 'fecha fuera de plazo' }, 400);
     }
 

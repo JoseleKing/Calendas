@@ -1,35 +1,23 @@
 // Utilidades de fecha. Una "fecha de juego" es siempre una cadena 'AAAA-MM-DD'
-// referida al calendario de Madrid. Módulo puro: lo usan el navegador y la
-// Worker de Cloudflare, así que no debe tocar `window` ni `document`.
+// referida al calendario del jugador: el día cambia a su medianoche. Módulo puro:
+// lo usan el navegador y la Worker de Cloudflare, así que no debe tocar `window`
+// ni `document`.
 
-export const ZONA = 'Europe/Madrid';
 export const FECHA_LANZAMIENTO = '2026-10-01';
 
 const MS_DIA = 86_400_000;
 
-const formatoMadrid = new Intl.DateTimeFormat('en-CA', {
-  timeZone: ZONA,
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit',
-  hourCycle: 'h23',
-});
-
-function partesMadrid(ms) {
-  const partes = {};
-  for (const { type, value } of formatoMadrid.formatToParts(ms)) partes[type] = Number(value);
-  return partes;
-}
-
 const dosCifras = (n) => String(n).padStart(2, '0');
 
-/** Fecha de juego actual (o del instante `ms`) en Madrid. */
-export function fechaMadrid(ms = Date.now()) {
-  const { year, month, day } = partesMadrid(ms);
-  return `${year}-${dosCifras(month)}-${dosCifras(day)}`;
+/** Fecha de juego actual (o del instante `ms`) en la hora local del jugador. */
+export function fechaLocal(ms = Date.now()) {
+  const d = new Date(ms);
+  return `${d.getFullYear()}-${dosCifras(d.getMonth() + 1)}-${dosCifras(d.getDate())}`;
+}
+
+/** Fecha UTC del instante `ms`. La usa la Worker, que no sabe la hora del jugador. */
+export function fechaUTC(ms = Date.now()) {
+  return new Date(ms).toISOString().slice(0, 10);
 }
 
 export function esFechaValida(fecha) {
@@ -67,22 +55,10 @@ export function semanaDesdeLanzamiento(fecha) {
   return Math.floor((lunes(fecha) - lunes(FECHA_LANZAMIENTO)) / 7);
 }
 
-/** Diferencia en ms entre la hora de Madrid y UTC en el instante `ms`. */
-function desfaseMadrid(ms) {
-  const p = partesMadrid(ms);
-  const comoUTC = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
-  return comoUTC - Math.floor(ms / 1000) * 1000;
-}
-
-/** Instante (ms UTC) de la medianoche de Madrid que abre `fecha`. Tiene en cuenta el horario de verano. */
-function medianocheMadrid(fecha) {
-  const aproximado = indiceDia(fecha) * MS_DIA;
-  const primeraEstimacion = aproximado - desfaseMadrid(aproximado);
-  return aproximado - desfaseMadrid(primeraEstimacion);
-}
-
+/** Ms hasta la próxima medianoche local. También los días de cambio de hora (23 o 25 horas). */
 export function msHastaProximoDuelo(ahora = Date.now()) {
-  return medianocheMadrid(sumarDias(fechaMadrid(ahora), 1)) - ahora;
+  const d = new Date(ahora);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1) - ahora;
 }
 
 const formatoLargo = new Intl.DateTimeFormat('es-ES', {

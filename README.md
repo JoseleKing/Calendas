@@ -16,7 +16,7 @@ public/                        La web: todo lo que se publica
   reiniciar/index.html         /reiniciar: borra los datos locales y vuelve al juego
   css/estilos.css              Estilos (tokens de color, cartas, animaciones, modo oscuro)
   js/app.js                    Arranque y flujo de la partida
-  js/fecha.js                  Fecha de Madrid, número de duelo, cuenta atrás (módulo puro)
+  js/fecha.js                  Fecha local, número de duelo, cuenta atrás (módulo puro)
   js/duelos.js                 Elección determinista de los duelos del día y validación del banco
   js/estadisticas.js           Rachas y aciertos en localStorage
   js/api.js                    Cliente del contador global (tolerante a fallos)
@@ -70,7 +70,7 @@ Los PNG se generan a partir de los SVG de `assets/` con `npm run iconos` (usa `s
 
 ## Cómo funcionan los duelos del día
 
-- La fecha es siempre la de **Europe/Madrid**, y el día cambia a medianoche de Madrid (con el horario de verano en cuenta).
+- La fecha es la del **jugador**: el día cambia a su medianoche, como en los demás juegos de Almanaque.
 - **Desde el 3 de octubre de 2026 hay tres duelos al día** (`FECHA_TRES_DUELOS` en `public/js/duelos.js`), sacados de un **calendario**: cada duelo nuevo lleva una `fecha` y ese día salen sus tres duelos, en orden de `id`. Conviene ordenarlos de más fácil a más difícil.
 - Arriba aparecen tres pestañas (*Duelo 1*, *Duelo 2*, *Duelo 3*) con el resultado de cada uno. Al responder, el botón lleva al siguiente duelo sin jugar; al terminar los tres aparecen *Compartir resultado* (`Calendas #3 ✅❌✅ 🔥4`), la cuenta atrás y el aviso de «Hecho» a Almanaque. Cada duelo se abre con `?partida=N`; sin ese parámetro se abre el primero sin jugar.
 - **El calendario es un ciclo** que termina el 10 de diciembre de 2026 (`FIN_DEL_CICLO` en `public/js/duelos.js`). Desde el día siguiente vuelve a empezar por el día del lanzamiento: el 11 de diciembre salen los duelos del 1 de octubre (uno solo, como aquel día), el 12 los del 2, el 13 los del 3 de octubre, y así sucesivamente. El número del día sigue creciendo (#72, #73…), y las estadísticas y el contador se guardan con la fecha real, así que no se mezclan con las de la primera vuelta. Si añades días al calendario, mueve `FIN_DEL_CICLO` al último.
@@ -121,7 +121,7 @@ Los duelos 1 a 14 no llevan `fecha` sino `dificultad` (de 1 a 7): son los del si
 
 `worker/index.js` expone `/api/respuestas`:
 
-- `POST { fecha, ronda, palabra }`: registra la respuesta al duelo `ronda` (1, 2 o 3) de ese día y devuelve `{ aciertos, total }`. El acierto se calcula en el servidor y solo se aceptan respuestas de hoy o de ayer, para quien responde justo después de medianoche.
+- `POST { fecha, ronda, palabra }`: registra la respuesta al duelo `ronda` (1, 2 o 3) de ese día y devuelve `{ aciertos, total }`. El acierto se calcula en el servidor y solo se aceptan respuestas con fecha de entre dos días antes y un día después de la fecha UTC del servidor: cada jugador usa su fecha local (de UTC−12 a UTC+14), y quien responde justo después de medianoche aún envía la de ayer.
 - `GET ?fecha=AAAA-MM-DD&ronda=N`: devuelve `{ aciertos, total }`.
 - Si falta `ronda`, se entiende que es 1.
 
