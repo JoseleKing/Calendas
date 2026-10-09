@@ -808,9 +808,36 @@ button {
   visibility: hidden;
 }
 
+/* La C se estampa en el lacre mientras el anillo punteado gira y se frena, como una rueda de calendario. */
+#portada .portada-c,
+#portada .portada-anillo {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+#portada .portada-c {
+  animation: estampar 0.7s cubic-bezier(0.3, 0, 0.2, 1) 0.3s both;
+}
+
+#portada .portada-anillo {
+  animation: girar-anillo 0.9s cubic-bezier(0.2, 0.7, 0.3, 1) 0.3s both;
+}
+
 @keyframes asomar {
   from { opacity: 0; transform: scale(0.92); }
   to { opacity: 1; transform: none; }
+}
+
+@keyframes estampar {
+  0% { opacity: 0; transform: scale(1.35) rotate(-14deg); }
+  45% { opacity: 1; transform: scale(0.93) rotate(3deg); }
+  70% { transform: scale(1.03) rotate(-1deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes girar-anillo {
+  from { transform: rotate(0); }
+  to { transform: rotate(50deg); }
 }
 
 /* ---------- Modo desarrollo ---------- */
