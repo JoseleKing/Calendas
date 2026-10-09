@@ -96,12 +96,12 @@ function siguienteSinJugar() {
 
 /**
  * La portada con el logo se ve al menos PORTADA_MS desde que se abre la app y luego se desvanece.
- * Los estilos (fuentes de Google incluidas) bloquean el primer pintado, y este script corre cuando
- * ya han cargado: con red lenta se garantiza además que se vea VISIBLE_MS desde ese momento.
+ * Los estilos (fuentes de Google incluidas) bloquean el primer pintado: con red lenta se garantiza
+ * además que se vea PINTADA_MS desde que se pintó, para que el logo acabe de animarse.
  */
 function retirarPortada() {
   const PORTADA_MS = 1500;
-  const VISIBLE_MS = 800;
+  const PINTADA_MS = 1400;
   const FUNDIDO_MS = 500;
   const portada = document.getElementById('portada');
   if (!portada) return;
@@ -109,10 +109,11 @@ function retirarPortada() {
     portada.remove();
     return;
   }
+  const pintada = performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? performance.now();
   setTimeout(() => {
     portada.classList.add('oculta');
     setTimeout(() => portada.remove(), FUNDIDO_MS);
-  }, Math.max(VISIBLE_MS, PORTADA_MS - performance.now()));
+  }, Math.max(0, PORTADA_MS - performance.now(), PINTADA_MS - (performance.now() - pintada)));
 }
 
 async function iniciar() {
